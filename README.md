@@ -4,13 +4,13 @@ Build scripts for creating CentOS and Fedora images for Rock64 devices.
 
 ## Instructions (Automatic Build)
 
-Create the Rock64 image for CentOS or downliad is from the [releases page](https://github.com/ekultails/rock64_fedora/releases).
+Create the Rock64 image for CentOS or download it from the [releases page](https://github.com/ekultails/rock64_fedora/releases).
 
 ```
 $ sudo bash rock64_fedora.sh
 ```
 
-Use `dd` to copy the `/root/.rock64_fedora_tmp/centos-8.0-minimal-rock64-0.2.0.img` image to a microSD card.
+Use `dd` to copy the `/root/.rock64_fedora_tmp/centos-8.0-minimal-rock64-X.Y.Z.img` image to a microSD card.
 
 ## Instructions (Manual Build)
 
@@ -29,10 +29,22 @@ These steps are verified to be work on setting up CentOS 8 on a Rock64.
 
 ## Known Issues
 
--  DNF does not recognize the `releasever` used in repository URLs. This must be manually set. For example: `dnf update --releasever 8` for CentOS 8.0.
+- The RPM database that Rock64 Debian/Ubuntu based distribution creates is incompatible with CentOS (due to version differences with RPM/Yum).
+    - After the first successful boot of Rock64, recreate the RPM database and then re-install the packages defined in `chroot_create.sh`. If these are not reinstalled, package dependency and upgrade issues can occur later on.
+
+```
+# cd /var/lib/rpm/
+# rm -rf ./*
+# rpm --initdb
+# dnf install --releasever 8 ...
+```
+
+- NetworkManager.service fails to start causing a delayed boot. DHCP will still get correctly configured automatically.
+- SELinux is not enabled.
 
 ## Scripts Change Log
 
+- 0.2.1 = Install the required dependencies for resizing the root partition on the first boot. List known issues.
 - 0.2.0 = Use Debian 10/Buster instead of 9/Stretch. Use a prebuilt root filesystem (container images are no longer used). Use a folder in the `$HOME` directory for temporary files (instead of /tmp to handle operating systems that use tmpfs with limited space). The rock64_fedora.sh script now works as intended.
 - 0.1.0 = Start of a proof-of-concept script (not working) to use a CentOS 8 container image and a Debian 10 Rock64 baremetal image to build a CentOS 8 baremetal image.
 

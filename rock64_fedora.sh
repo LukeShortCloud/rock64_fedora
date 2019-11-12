@@ -1,19 +1,20 @@
 #!/bin/bash
 
 set -x
-ROCK64_VERSION="0.2.0"
+ROCK64_VERSION="0.2.1"
 echo "rock64_fedora version: $ROCK64_VERSION"
 rock64_release_full="0.9.16-1163"
 rock64_release=$(echo $rock64_release_full | cut -d\- -f1)
 rock64_image="buster-minimal-rock64-${rock64_release_full}-arm64.img"
 rock64_url="https://github.com/ayufan-rock64/linux-build/releases/download/${rock64_release}/${rock64_image}.xz"
+centos_rootfs="centos-8.0-aarch64-rootfs-0.2.1"
 
 TMP_DIR="$HOME/.rock64_fedora_tmp"
 mkdir $TMP_DIR
 cd $TMP_DIR
 echo "Working directory: $(pwd)"
-wget https://github.com/ekultails/rock64_fedora/releases/download/0.1.0/centos-8.0-aarch64-rootfs.tar.xz
-tar -x -f centos-8.0-aarch64-rootfs.tar.xz
+wget https://github.com/ekultails/rock64_fedora/releases/download/0.2.1/${centos_rootfs}.tar.xz
+tar -x -f ${centos_rootfs}.tar.xz
 # Clean up existing image that may be modified.
 rm -f $rock64_image
 wget $rock64_url
@@ -26,10 +27,8 @@ mount ${loop_device}p7 ${TMP_DIR}/mnt
 rock64_fedora_image="centos-8.0-minimal-rock64-$ROCK64_VERSION"
 mkdir $rock64_fedora_image
 cd $rock64_fedora_image
-cp -r ../centos-8.0-aarch64-rootfs/* ./
+cp -r ../${centos_rootfs}/* ./
 chmod 1777 ./tmp
-rm -rf ./var/cache/yum/*
-> ./etc/machine-id
 cp -r ${TMP_DIR}/mnt/boot ./
 cp -r ${TMP_DIR}/mnt/vendor ./
 # Fedora uses a symlink from /lib to /usr/lib.
