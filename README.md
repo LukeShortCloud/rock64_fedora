@@ -2,19 +2,52 @@
 
 Build scripts for creating CentOS and Fedora images for Rock64 devices.
 
-## Instructions (Automatic Build)
+## Install
 
-Create the Rock64 image for CentOS or download it from the [releases page](https://github.com/ekultails/rock64_fedora/releases).
+Download a premade image from [releases page](https://github.com/ekultails/rock64_fedora/releases) and use `dd` to add it to a microSD card.
+
+## Image Build Instructions
+
+### CentOS
+
+**RECOMMENDED**
 
 ```
+$ sudo chroot_create.sh centos
 $ sudo bash rock64_fedora.sh
 ```
 
 Use `dd` to copy the `/root/.rock64_fedora_tmp/centos-8.0-minimal-rock64-X.Y.Z.img` image to a microSD card.
 
-## Instructions (Manual Build)
+### Debian
 
-These steps are verified to be work on setting up CentOS 8 on a Rock64.
+**NOT RECOMMENDED.**
+
+The RPM database that Rock64 Debian/Ubuntu based distribution creates is incompatible with CentOS (due to version differences with RPM/Yum).
+
+Create the Rock64 image for CentOS or download it from the [releases page](https://github.com/ekultails/rock64_fedora/releases).
+
+```
+$ sudo chroot_create.sh centos
+$ sudo bash rock64_fedora.sh
+```
+
+Use `dd` to copy the `/root/.rock64_fedora_tmp/centos-8.0-minimal-rock64-X.Y.Z.img` image to a microSD card.
+
+After the first successful boot of Rock64, recreate the RPM database and then re-install the packages defined in `chroot_create.sh`. If these are not reinstalled, package dependency and upgrade issues can occur later on.
+
+```
+# cd /var/lib/rpm/
+# rm -rf ./*
+# rpm --initdb
+# dnf install --releasever 8 ...
+```
+
+### Manual
+
+**NOT RECOMMENDED.**
+
+These steps are verified to be work on setting up CentOS 8 on a Rock64. This starts from scratch using an official Rock64 Debian image.
 
 - `dd` a Debian 10/Buster Rock64 images from the [official releases](https://github.com/ayufan-rock64/linux-build/releases) to a microSD card.
 - Boot the Rock64 up. Scripts will run to automatically resize the root partitions.
@@ -29,21 +62,11 @@ These steps are verified to be work on setting up CentOS 8 on a Rock64.
 
 ## Known Issues
 
-- The RPM database that Rock64 Debian/Ubuntu based distribution creates is incompatible with CentOS (due to version differences with RPM/Yum).
-    - After the first successful boot of Rock64, recreate the RPM database and then re-install the packages defined in `chroot_create.sh`. If these are not reinstalled, package dependency and upgrade issues can occur later on.
-
-```
-# cd /var/lib/rpm/
-# rm -rf ./*
-# rpm --initdb
-# dnf install --releasever 8 ...
-```
-
-- NetworkManager.service fails to start causing a delayed boot. DHCP will still get correctly configured automatically.
 - SELinux is not enabled.
 
 ## Scripts Change Log
 
+- 0.3.0 = Add experimental support for building a Fedora 31 image. CentOS releases are now self-building (built on a rock64_fedora CentOS device).
 - 0.2.1 = Install the required dependencies for resizing the root partition on the first boot. List known issues.
 - 0.2.0 = Use Debian 10/Buster instead of 9/Stretch. Use a prebuilt root filesystem (container images are no longer used). Use a folder in the `$HOME` directory for temporary files (instead of /tmp to handle operating systems that use tmpfs with limited space). The rock64_fedora.sh script now works as intended.
 - 0.1.0 = Start of a proof-of-concept script (not working) to use a CentOS 8 container image and a Debian 10 Rock64 baremetal image to build a CentOS 8 baremetal image.

@@ -1,19 +1,18 @@
 #!/bin/bash
 
 set -x
-ROCK64_VERSION="0.2.1"
+TMP_DIR="$HOME/.rock64_fedora_tmp"
+ROCK64_VERSION="0.3.0"
 echo "rock64_fedora version: $ROCK64_VERSION"
 rock64_release_full="0.9.16-1163"
 rock64_release=$(echo $rock64_release_full | cut -d\- -f1)
 rock64_image="buster-minimal-rock64-${rock64_release_full}-arm64.img"
 rock64_url="https://github.com/ayufan-rock64/linux-build/releases/download/${rock64_release}/${rock64_image}.xz"
-centos_rootfs="centos-8.0-aarch64-rootfs-0.2.1"
-
-TMP_DIR="$HOME/.rock64_fedora_tmp"
+centos_rootfs="centos-8-aarch64-rootfs-${ROCK64_VERSION}"
 mkdir $TMP_DIR
 cd $TMP_DIR
 echo "Working directory: $(pwd)"
-wget https://github.com/ekultails/rock64_fedora/releases/download/0.2.1/${centos_rootfs}.tar.xz
+wget https://github.com/ekultails/rock64_fedora/releases/download/${ROCK64_VERSION}/${centos_rootfs}.tar.xz
 tar -x -f ${centos_rootfs}.tar.xz
 # Clean up existing image that may be modified.
 rm -f $rock64_image
@@ -32,8 +31,8 @@ chmod 1777 ./tmp
 cp -r ${TMP_DIR}/mnt/boot ./
 cp -r ${TMP_DIR}/mnt/vendor ./
 # Fedora uses a symlink from /lib to /usr/lib.
-cp -r ${TMP_DIR}/mnt/lib/firmware usr/lib/
-cp -r ${TMP_DIR}/mnt/lib/modules usr/lib/
+\cp -r -f ${TMP_DIR}/mnt/lib/firmware usr/lib/
+\cp -r -f ${TMP_DIR}/mnt/lib/modules usr/lib/
 cp -r ${TMP_DIR}/mnt/usr/src/linux-headers-* usr/src/kernels/
 # Copy the root filesystem resizing script.
 cp ${TMP_DIR}/mnt/etc/systemd/system/first-boot.service etc/systemd/system/first-boot.service
