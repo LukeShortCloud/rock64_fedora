@@ -19,19 +19,6 @@ $ sudo bash rock64_fedora.sh
 
 Use `dd` to copy the `/root/.rock64_fedora_tmp/centos-8.0-minimal-rock64-X.Y.Z.img` image to a microSD card.
 
-Once booted, a few tweaks need to be made. Import the proper CentOS GPG key:
-
-```
-# rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-centos*
-```
-
-For preventing certificate authority (and other) issues, ensure a NTP service is installed and running.
-
-```
-# yum install chrony
-# systemctl start chroynd
-```
-
 ### Debian
 
 **NOT RECOMMENDED.**
@@ -76,9 +63,11 @@ These steps are verified to be work on setting up CentOS 8 on a Rock64. This sta
 ## Known Issues
 
 - SELinux is not enabled.
+- iptables and firewalld service compatibility (likely related to the older 4.4 kernel vs. CentOS 8 expecting 4.18).
 
 ## Scripts Change Log
 
+- 0.4.0 = Enable chronyd (NTP service). Allow local builds using rock64_fedora.
 - 0.3.0 = Add experimental support for building a Fedora 31 image. CentOS releases are now self-building (built on a rock64_fedora CentOS device).
 - 0.2.1 = Install the required dependencies for resizing the root partition on the first boot. List known issues.
 - 0.2.0 = Use Debian 10/Buster instead of 9/Stretch. Use a prebuilt root filesystem (container images are no longer used). Use a folder in the `$HOME` directory for temporary files (instead of /tmp to handle operating systems that use tmpfs with limited space). The rock64_fedora.sh script now works as intended.

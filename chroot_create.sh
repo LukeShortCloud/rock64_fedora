@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ROCK64_VERSION="0.3.0"
+ROCK64_VERSION="0.4.0"
 
 if [[ -d /etc/apt ]]; then
     apt-get update -y
@@ -39,6 +39,7 @@ enabled=1
 EOF
 else
     echo "Wrong operating system specified. Use: centos or fedora"
+    exit 1
 fi
 
 # Example: centos-8.0-aarch64-rootfs-0.3.0
@@ -49,7 +50,7 @@ $pkg_mgr install -y ${repos_args[@]} --releasever $os_version $@-release --insta
 mkdir -p /root/${fedora_rootfs}/etc/yum.repos.d/
 cp /etc/yum.repos.d/rock64_fedora.repo /root/${fedora_rootfs}/etc/yum.repos.d/
 $pkg_mgr install -y ${repos_args[@]} --releasever $os_version \
-    dnf e2fsprogs gdisk less openssh-server parted passwd sudo "@Minimal Install" --installroot=/root/$fedora_rootfs
+    chrony dnf e2fsprogs gdisk less openssh-server parted passwd sudo "@Minimal Install" --installroot=/root/$fedora_rootfs
 cd /root/
 # Reset the unique machine-id
 > ${fedora_rootfs}/etc/machine-id

@@ -1,8 +1,7 @@
 #!/bin/bash
 
-set -x
 TMP_DIR="$HOME/.rock64_fedora_tmp"
-ROCK64_VERSION="0.3.0"
+ROCK64_VERSION="0.4.0"
 echo "rock64_fedora version: $ROCK64_VERSION"
 rock64_release_full="0.9.16-1163"
 rock64_release=$(echo $rock64_release_full | cut -d\- -f1)
@@ -12,8 +11,14 @@ centos_rootfs="centos-8-aarch64-rootfs-${ROCK64_VERSION}"
 mkdir $TMP_DIR
 cd $TMP_DIR
 echo "Working directory: $(pwd)"
-wget https://github.com/ekultails/rock64_fedora/releases/download/${ROCK64_VERSION}/${centos_rootfs}.tar.xz
-tar -x -f ${centos_rootfs}.tar.xz
+
+if [[ "$1" == "local" ]]; then
+    tar -x -f ${centos_rootfs}.tar*
+else
+    wget https://github.com/ekultails/rock64_fedora/releases/download/${ROCK64_VERSION}/${centos_rootfs}.tar.xz
+    tar -x -f ${centos_rootfs}.tar.xz
+fi
+
 # Clean up existing image that may be modified.
 rm -f $rock64_image
 wget $rock64_url
@@ -41,6 +46,10 @@ cp ${TMP_DIR}/mnt/usr/local/sbin/rock64_first_boot.sh usr/local/sbin/
 cp ${TMP_DIR}/mnt/usr/local/sbin/resize_rootfs.sh usr/local/sbin/
 # Enable the OpenSSH server.
 ln -s /usr/lib/systemd/system/sshd.service etc/systemd/system/multi-user.target.wants/sshd.service
+# Enable the Chrony NTP service.
+ln -s /usr/lib/systemd/system/chronyd.service etc/systemd/system/multi-user.target.wants/chronyd.service
+# Disable firewalld due to compatibility problems.
+rm -f etc/systemd/system/dbus-org.fedoraproject.FirewallD1.service etc/systemd/system/multi-user.target.wants/firewalld.service
 # The root password will fail to reset without this option.
 # https://bugzilla.redhat.com/show_bug.cgi?id=1410450
 echo "dictcheck = 0" >> etc/security/pwquality.conf
