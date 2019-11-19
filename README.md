@@ -19,6 +19,19 @@ $ sudo bash rock64_fedora.sh
 
 Use `dd` to copy the `/root/.rock64_fedora_tmp/centos-8.0-minimal-rock64-X.Y.Z.img` image to a microSD card.
 
+Once booted, a few tweaks need to be made. Import the proper CentOS GPG key:
+
+```
+# rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-centos*
+```
+
+For preventing certificate authority (and other) issues, ensure a NTP service is installed and running.
+
+```
+# yum install chrony
+# systemctl start chroynd
+```
+
 ### Debian
 
 **NOT RECOMMENDED.**
