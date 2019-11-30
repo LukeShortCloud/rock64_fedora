@@ -65,14 +65,6 @@ These steps are verified to be work on setting up CentOS 8 on a Rock64. This sta
 - SELinux is not enabled.
 - iptables and firewalld service compatibility (likely related to the older 4.4 kernel vs. CentOS 8 expecting 4.18).
 
-## Scripts Change Log
-
-- 0.4.0 = Enable chronyd (NTP service). Allow local builds using rock64_fedora.
-- 0.3.0 = Add experimental support for building a Fedora 31 image. CentOS releases are now self-building (built on a rock64_fedora CentOS device).
-- 0.2.1 = Install the required dependencies for resizing the root partition on the first boot. List known issues.
-- 0.2.0 = Use Debian 10/Buster instead of 9/Stretch. Use a prebuilt root filesystem (container images are no longer used). Use a folder in the `$HOME` directory for temporary files (instead of /tmp to handle operating systems that use tmpfs with limited space). The rock64_fedora.sh script now works as intended.
-- 0.1.0 = Start of a proof-of-concept script (not working) to use a CentOS 8 container image and a Debian 10 Rock64 baremetal image to build a CentOS 8 baremetal image.
-
 ## License
 
 GPLv3
